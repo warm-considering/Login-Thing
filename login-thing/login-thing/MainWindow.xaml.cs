@@ -17,6 +17,7 @@ using System.IO;
 using System.Data.Linq;
 using System.Data.Sql;
 using System.Data.Linq.Mapping;
+using System.Text.RegularExpressions;
 
 namespace login_thing
 {
@@ -66,7 +67,35 @@ namespace login_thing
                 surname = _surname,
                 email = _email
             };
-            //TODO: Write Validation logic here
+            
+            //TODO: Presence check
+
+            if (newUser.username.Length > 10)
+            {
+                MessageBox.Show("The username must be no longer than 10 characters.");
+                return;
+            }
+            if (!Regex.IsMatch(newUser.password, @"^(?=.*[A-Z])(?=.*\d)[a-zA-Z0-9]{6,12}$"))
+            {
+                MessageBox.Show("The password must be between 6 and 12 characters and contain at least one number and one capital letter.");
+                return;
+            }
+            if (!Regex.IsMatch(newUser.forename, @"^(?!.*\s)(?!.*\d)[A-Za-z]{1,12}$"))
+            {
+                MessageBox.Show("Your forename must not contain any special characters, spaces or numbers");
+                return;
+            }
+
+            if (!Regex.IsMatch(newUser.surname, @"^(?!.*\s)(?!.*\d)[A-Za-z\-]{1,12}$"))
+            {
+                MessageBox.Show("Your surname must not contain any numbers, spaces or special characters except '-'");
+                return;
+            }
+            if (!Regex.IsMatch(newUser.email, @"^[a-z0-9](\.?[a-z0-9_-]){0,}@[a-z0-9-]+\.([a-z]{1,6}\.)?[a-z]{2,6}$"))
+            {
+                MessageBox.Show("Please enter a valid email");
+                return;
+            }
         }
     }
 
@@ -85,6 +114,16 @@ namespace login_thing
     {
         public Table<User> Users;
         public UserDB(string connection) : base(connection) { }
+
+        public void addUser(User user)
+        {
+            return;
+        }
+
+        public void checkUser(User user)
+        {
+            return;
+        }
     }
 
     [Table(Name = "UserTable")]
