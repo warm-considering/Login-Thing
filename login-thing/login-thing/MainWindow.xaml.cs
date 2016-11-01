@@ -33,9 +33,10 @@ namespace login_thing
 
         public void Notify(string property) //This method essentially checks if the property has changed since the last check and then triggers the event if it has
         {
-            if (PropertyChanged != null)
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null)
             {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
+                handler(this, new PropertyChangedEventArgs(property));                
             }
         }
     }
@@ -43,7 +44,7 @@ namespace login_thing
     public class SignUp : BaseNotify //As you can see here, this class inherits from the BaseNotify class I wrote earlier, allowing it to use everything in that class
     {        
         //These statements are properties for the SignUp class, these will retrieve the appropriate bits of data from the gui
-        public string forename { get { return forename; } set { _forename = value; Notify("forename"); } }
+        public string forename { get { return _forename; } set { _forename = value; Notify("forename"); } }
         public string surname { get { return surname; } set { _surname = value; Notify("surname"); } }
         public string username { get { return username; } set { _username = value; Notify("username"); } }
         public string email { get { return email; } set { _email = value; Notify("email"); } }
@@ -55,6 +56,8 @@ namespace login_thing
         private string _username;
         private string _email;
         private string _password;
+
+        public ICommand<void> signUp
 
         public void signUp()
         {
@@ -161,13 +164,13 @@ namespace login_thing
         public SignUp signUp { get; set; }//This does the same for the SignUp class
         public MainWindow()
         {
-            DataContext = this; //The fact that the other two classes are properties of this class allow me to set this class as the data context of itself
+            DataContext = new SignUp(); //The fact that the other two classes are properties of this class allow me to set this class as the data context of itself
                                 //This means that I can specify whether a gui element is for Signing Up or Logging in by putting the data context as
                                 //login.whatever or signup.whatever            
             string[] dir = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory);
-            if (dir.Contains("users.mdf") == false)
+            if (dir.Contains(AppDomain.CurrentDomain.BaseDirectory+"users.mdf") == false)
             {
-                UserDB db = new UserDB(AppDomain.CurrentDomain.BaseDirectory+@"\users.mdf");
+                UserDB db = new UserDB(@"Data Source=(LocalDB)\MSSQLLoc alDB;AttachDbFilename=C:\Users\luke_\Source\Repos\Login-Thing\login-thing\login-thing\bin\Debug\users.mdf;Integrated Security=True");
                 db.CreateDatabase();
             }
             InitializeComponent();
