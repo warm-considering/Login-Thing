@@ -18,10 +18,11 @@ def openFile():
     file = open(filename, 'r+b')
     encryptedPasses = file.read()
     password = input("Enter the master password for this file: ")
-    hashedMaster = hashlib.sha1(password)
+    hashedMaster = hashlib.sha1(password.encode(encoding="UTF-8")).digest()
     decryptedPasses = logicalXOR(encryptedPasses, hashedMaster)
-    passwords = pickle.load(encryptedPasses)
-    print(passwords)
+    passwords = pickle.loads(decryptedPasses)
+    for i in passwords:
+        print(i+": "+passwords[i])
 
 
 def createFile():
